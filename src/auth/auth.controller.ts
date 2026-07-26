@@ -9,5 +9,4 @@ export class AuthController {
     async login(@Body() dto: AutoDto){
       return await this.authService.login(dto);
     }
-
 }

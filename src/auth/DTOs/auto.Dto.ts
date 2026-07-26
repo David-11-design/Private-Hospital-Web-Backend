@@ -7,6 +7,6 @@ export class AutoDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly Password!: string;
+  readonly PasswordHash!: string;
 
 }
