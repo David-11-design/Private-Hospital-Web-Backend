@@ -1,4 +1,4 @@
 export class CreatePatientInterface{
-    Cod!: string;
-    Mensaje!: String;
+    cod!: string;
+    mensaje!: string;
 }

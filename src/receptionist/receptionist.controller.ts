@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ReceptionistService } from './receptionist.service';
-import {patientDto} from './dto/patient.dto';
+import {patientDto} from './dto/create-patient.dto';
 import {CreatePatientInterface} from './interfaces/create-patient.interface';
 
 @Controller('receptionist')

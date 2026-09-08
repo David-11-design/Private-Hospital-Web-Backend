@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 import { DatabaseService } from '../dbservice/database.service';
-import { patientDto } from './dto/patient.dto';
+import { patientDto } from './dto/create-patient.dto';
 import {CreatePatientInterface} from './interfaces/create-patient.interface';
 
 @Injectable()
@@ -29,18 +29,13 @@ export class ReceptionistService {
                 .output('Mensaje', sql.VarChar(150))
                 .execute('dbo.sp_ReceptionistQuery');
 
-            const result = {
-                Cod: response.output.Cod,
-                Mensaje: response.output.Mensaje
-            };
+            const result = { cod: response.output.Cod, mensaje: response.output.Mensaje };
 
             return response.output !== '000' ? result : result;
+            
         }catch(error){
             console.log(error);
-            return{
-                Cod: '',
-                Mensaje: ''
-            }
+            return{ cod: '', mensaje: '' };
         }
     }
 }
