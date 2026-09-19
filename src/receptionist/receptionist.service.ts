@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 import { DatabaseService } from '../dbservice/database.service';
 import { patientDto } from './dto/create-patient.dto';
-import {CreatePatientInterface} from './interfaces/create-patient.interface';
+import { CreatePatientInterface } from './interfaces/create-patient.interface';
 
 @Injectable()
 export class ReceptionistService {
@@ -10,8 +10,7 @@ export class ReceptionistService {
     constructor(private readonly databaseService: DatabaseService) { }
 
     async createPatientService(dto: patientDto)
-    : Promise<CreatePatientInterface>
-    {
+        : Promise<CreatePatientInterface> {
         try {
             const pool = await this.databaseService.getConnection();
 
@@ -32,10 +31,60 @@ export class ReceptionistService {
             const result = { cod: response.output.Cod, mensaje: response.output.Mensaje };
 
             return response.output !== '000' ? result : result;
-            
-        }catch(error){
+
+        } catch (error) {
             console.log(error);
-            return{ cod: '', mensaje: '' };
+            return { cod: '', mensaje: '' };
         }
     }
+
+    async getPatientService() {
+        try {
+            const pool = await this.databaseService.getConnection();
+
+            const resp = await pool.request()
+                .input('tipo', sql.Int, 2)
+                .execute('dbo.sp_ReceptionistQuery');
+
+            return resp.recordset;
+
+        } catch (error) {
+            console.log();
+            return { cod: '', mensaje: '' };
+        }
+    }
+
+    async getSpecialitiesService() {
+        try {
+            const pool = await this.databaseService.getConnection();
+
+            const resp = await pool.request()
+                .input('tipo', sql.Int, 3)
+                .execute('dbo.sp_ReceptionistQuery');
+
+            return resp.recordset;
+
+        } catch (error) {
+            console.log();
+            return { cod: '', mensaje: '' };
+        }
+    }
+
+    async scheduleAppointment(idSpeciality: number) {
+        try {
+            const pool = await this.databaseService.getConnection();
+
+            const resp = await pool.request()
+                .input('tipo', sql.Int, 4)
+                .input('Speciality', sql.Int, idSpeciality)
+                .execute('dbo.sp_ReceptionistQuery')
+
+            return resp.recordset;
+
+        } catch (error) {
+            console.log(error);
+            return { cod: '', mensaje: '' };
+        }
+    }
+
 }
