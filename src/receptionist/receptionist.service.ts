@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as sql from 'mssql';
 import { DatabaseService } from '../dbservice/database.service';
 import { patientDto } from './dto/create-patient.dto';
@@ -9,82 +9,65 @@ export class ReceptionistService {
 
     constructor(private readonly databaseService: DatabaseService) { }
 
+    private async connection() {
+        const req = await this.databaseService.getConnection();
+        if (!req) {
+            throw new InternalServerErrorException('Error en la conexion de la DB');
+        }
+        return req.request();
+    }
+
     async createPatientService(dto: patientDto)
         : Promise<CreatePatientInterface> {
-        try {
-            const pool = await this.databaseService.getConnection();
+        const req = await this.connection();
 
-            const response = await pool.request()
-                .input('tipo', sql.Int, 1)
-                .input('FirstName', sql.VarChar(100), dto.firstName)
-                .input('LastName', sql.VarChar(100), dto.lastName)
-                .input('IdentificationNumber', sql.VarChar(20), dto.IdentificationNumber)
-                .input('BirthDate', sql.Date, dto.birthDate)
-                .input('Gender', sql.Char(1), dto.gender)
-                .input('PhoneNumber', sql.VarChar(20), dto.phoneNumber)
-                .input('Email', sql.VarChar(150), dto.email)
-                .input('Address', sql.VarChar(255), dto.address)
-                .output('Cod', sql.VarChar(3))
-                .output('Mensaje', sql.VarChar(150))
-                .execute('dbo.sp_ReceptionistQuery');
+        const resp = await req
+            .input('tipo', sql.Int, 1).input('FirstName', sql.VarChar(100), dto.firstName).input('LastName', sql.VarChar(100), dto.lastName)
+            .input('IdentificationNumber', sql.VarChar(20), dto.IdentificationNumber).input('BirthDate', sql.Date, dto.birthDate)
+            .input('Gender', sql.Char(1), dto.gender).input('PhoneNumber', sql.VarChar(20), dto.phoneNumber).input('Email', sql.VarChar(150), dto.email).input('Address', sql.VarChar(255), dto.address)
+            .output('Cod', sql.VarChar(3)).output('Mensaje', sql.VarChar(150))
+            .execute('dbo.sp_ReceptionistQuery');
 
-            const result = { cod: response.output.Cod, mensaje: response.output.Mensaje };
+        const result = { cod: resp.output.Cod, mensaje: resp.output.Mensaje };
 
-            return response.output !== '000' ? result : result;
-
-        } catch (error) {
-            console.log(error);
-            return { cod: '', mensaje: '' };
-        }
+        return resp.output !== '000' ? result : result;
     }
 
-    async getPatientService() {
-        try {
-            const pool = await this.databaseService.getConnection();
+    async getPatientService()
+        : Promise<Record<string, unknown> | []> {
+        const req = await this.connection();
 
-            const resp = await pool.request()
-                .input('tipo', sql.Int, 2)
-                .execute('dbo.sp_ReceptionistQuery');
+        const resp = await req
+            .input('tipo', sql.Int, 2)
+            .execute('dbo.sp_ReceptionistQuery');
 
-            return resp.recordset;
-
-        } catch (error) {
-            console.log();
-            return { cod: '', mensaje: '' };
-        }
+        const result = resp.recordset.length > 0 ? resp.recordset : [];
+        return result;
     }
 
-    async getSpecialitiesService() {
-        try {
-            const pool = await this.databaseService.getConnection();
+    async getSpecialitiesService()
+        : Promise<Record<string, unknown> | []> {
 
-            const resp = await pool.request()
-                .input('tipo', sql.Int, 3)
-                .execute('dbo.sp_ReceptionistQuery');
+        const req = await this.connection();
 
-            return resp.recordset;
+        const resp = await req
+            .input('tipo', sql.Int, 3)
+            .execute('dbo.sp_ReceptionistQuery');
 
-        } catch (error) {
-            console.log();
-            return { cod: '', mensaje: '' };
-        }
+        const result = resp.recordset.length > 0 ? resp.recordset : [];
+        return result;
     }
 
-    async scheduleAppointment(idSpeciality: number) {
-        try {
-            const pool = await this.databaseService.getConnection();
+    async scheduleAppointment(idSpeciality: number)
+        : Promise<Record<string, unknown> | []> {
+        const req = await this.connection();
 
-            const resp = await pool.request()
-                .input('tipo', sql.Int, 4)
-                .input('Speciality', sql.Int, idSpeciality)
-                .execute('dbo.sp_ReceptionistQuery')
+        const resp = await req
+            .input('tipo', sql.Int, 4)
+            .input('Speciality', sql.Int, idSpeciality)
+            .execute('dbo.sp_ReceptionistQuery')
 
-            return resp.recordset;
-
-        } catch (error) {
-            console.log(error);
-            return { cod: '', mensaje: '' };
-        }
+        const result = resp.recordset.length > 0 ? resp.recordset : [];
+        return result;
     }
-
 }
