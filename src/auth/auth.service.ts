@@ -24,11 +24,11 @@ export class AuthService {
             .input('UsernameLogin', sql.NVarChar(100), dto.Username)
             .input('PasswordLogin', sql.NVarChar(100), dto.PasswordHash)
             .execute('sp_Login');
-        
-        const resul: unknown = (!resp.recordset) ?
+
+            const result: unknown = (!resp.recordset) ?
             (() => { throw new InternalServerErrorException('Auth sp query execution failed'); })() : resp.recordset.length === 0 ?
             (() => { throw new UnauthorizedException('Invalid username or password'); })() : resp.recordset[0];
 
-        return resul;
+        return result;
     }
 }
