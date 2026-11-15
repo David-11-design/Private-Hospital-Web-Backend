@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './dbservice/database.module';
 import { ReceptionistModule } from './receptionist/receptionist.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ReceptionistModule } from './receptionist/receptionist.module';
     AuthModule,
     DatabaseModule,
     ReceptionistModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
