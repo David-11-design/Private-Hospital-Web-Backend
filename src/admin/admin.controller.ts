@@ -1,4 +1,4 @@
-import { Body ,Controller, Post } from '@nestjs/common';
+import { Body ,Controller, Get, Post } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateEmployeeDto } from './DTOs/index.dto';
 
@@ -11,7 +11,7 @@ export class AdminController {
     return await this.adminService.createEmployee(dto);
   }
 
-  @Post('get-employees')
+  @Get('get-employees')
   async getEmployees() {
     return await this.adminService.getEmployees();
   }
